@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        li {
+            margin: 10px;
+        }
+    </style>
+    <script>
+        function sendMessageToApp(message) {
+            const interface = window.webkit?.messageHandlers?.WebViewSDKInterface || window.WebViewSDKInterface;
+            interface.postMessage(JSON.stringify(message));
+        }
+
+        window.WebViewSDK_Web = {
+            postMessage: function (message) {
+                const text = document.getElementById('receivedEvent');
+                const parsedMessage = JSON.parse(message);
+                text.innerText = JSON.stringify(parsedMessage, null, 2);
+            }
+        }
+    </script>
+</head>
+<body>
+<ul>
+    <li>
+        <script>
+            const renderCompleted = {
+                event: 'renderCompleted',
+                data: {},
+                id: '123456'
+            }
+        </script>
+        <button onclick="sendMessageToApp(renderCompleted)">Send 'renderCompleted' event</button>
+    </li>
+    <li>
+        <script>
+            const renderCompletedWithError = {
+                event: 'renderCompleted',
+                data: {},
+                error: {
+                    code: 'there_was_an_error_while_rendering',
+                    details: 'Ohhh no... something went wrong while rendering!'
+                },
+                id: '654321'
+            }
+        </script>
+        <button onclick="sendMessageToApp(renderCompletedWithError)">Send 'renderCompleted' event with Error</button>
+    </li>
+    <li>
+        <script>
+            const invalidEvent = {}
+        </script>
+        <button onclick="sendMessageToApp(invalidEvent)">Send invalid event</button>
+    </li>
+    <li>
+        <script>
+            const testMessage = {
+                event: 'test',
+                data: {
+                    some: 'test-data'
+                },
+                id: '987654'
+            }
+        </script>
+        <button onclick="window.WebViewSDK_Web.postMessage(JSON.stringify(testMessage))">
+            Test web interface
+        </button>
+    </li>
+    <li>
+        <script>
+            const downloadFileEvent = {
+                event: 'downloadFile',
+                data: {
+                    url: 'https://en.zalando.de/api/order-fragments/orders/10103564490209/invoice'
+                },
+                id: '94765445'
+            }
+        </script>
+        <button onclick="sendMessageToApp(downloadFileEvent)">Send download file event</button>
+        </button>
+    </li>
+</ul>
+Last received event:
+<pre id="receivedEvent"></pre>
+</body>
+</html>
